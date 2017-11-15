@@ -8,8 +8,11 @@ const bodyParser = require('body-parser');
 const session = require('express-session');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
-const multer = require('multer');
+const { check, validationResult } = require('express-validator/check');
+const { matchedData, sanitize } = require('express-validator/filter');
+const upload = require('multer')({dest: './uploads'});
 const flash = require('connect-flash');
+const messages = require('express-messages');
 const mongo = require('mongodb');
 const mongoose = require('mongoose');
 const db = mongoose.connection;
@@ -23,12 +26,7 @@ const app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'pug');
-
-// file uploads setup
-app.use(multer({
-  dest: 'uploads/'
-}));
+app.set('view engine', 'jade');
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
@@ -48,7 +46,41 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // validator setup
-// to be added
+// errorFormatter: function(param, msg, value){
+//   var namespace = param.split('.'),
+//     root = namespace.shift(),
+//     formParam = root;
+
+//   while(namespace.length){
+//     formParam += '[' + namespace.shift() + ']';
+//   }
+//   return {
+//     param: formParam,
+//     msg: msg,
+//     value: value
+//   }
+// }
+app.use([
+  // validation checks
+], function(req, res, next){
+  // Get the validation result whenever you want; see the Validation Result API for all options!
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).json({ errors: errors.array() });
+  }
+
+  // matchedData returns only the subset of data validated by the middleware
+  // const user = matchedData(req);
+  // createUser(user).then(user => res.json(user));
+  next();
+});
+
+// flash setup
+app.use(flash());
+app.use(function (req, res, next) {
+  res.locals.messages = messages(req, res);
+  next();
+});
 
 app.use('/', index);
 app.use('/users', users);
