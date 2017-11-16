@@ -1,6 +1,7 @@
 "use strict";
+const { path, requirePath, PATHS } = require('./paths');
+
 const express = require('express');
-const path = require('path');
 const favicon = require('serve-favicon');
 const logger = require('morgan');
 const cookieParser = require('cookie-parser');
@@ -8,37 +9,34 @@ const bodyParser = require('body-parser');
 const session = require('express-session');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
-const { check, validationResult } = require('express-validator/check');
-const { matchedData, sanitize } = require('express-validator/filter');
-const upload = require('multer')({dest: './uploads'});
+const { check, validationResult, matchedData, sanitize } = requirePath(PATHS.includes, 'validator');
+const upload = requirePath(PATHS.includes, 'upload');
 const flash = require('connect-flash');
 const messages = require('express-messages');
 const mongo = require('mongodb');
 const mongoose = require('mongoose');
 const db = mongoose.connection;
 
-const index = require('./routes/index');
-const users = require('./routes/users');
-
-const CONFIG = path.join(__dirname, 'config');
+const index = requirePath(PATHS.routes, 'index');
+const users = requirePath(PATHS.routes, 'users');
 
 const app = express();
 
 // view engine setup
-app.set('views', path.join(__dirname, 'views'));
+app.set('views', PATHS.views);
 app.set('view engine', 'jade');
 
 // uncomment after placing your favicon in /public
-//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+//app.use(favicon(path.join(PATHS.client, 'favicon.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use('/assets', express.static(path.join(__dirname, 'public/assets')));
+app.use('/assets', express.static(PATHS.assets));
 
 // sessions setup
 app.use(session(
-  require(path.join(CONFIG, 'session'))
+  requirePath(PATHS.config, 'session')
 ));
 
 // passport setup

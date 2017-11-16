@@ -1,4 +1,5 @@
 "use strict";
+const { requirePath, PATHS } = require('../paths');
 const express = require('express');
 const router = express.Router();
 
