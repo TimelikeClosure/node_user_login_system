@@ -1,7 +1,28 @@
 doctype html
-html
+html(lang='en')
   head
-    title= title
-    link(rel='stylesheet', href='/stylesheets/style.css')
+    title Welcome
+    link(href='/assets/stylesheets/bootstrap.css', rel='stylesheet', type='text/css')
+    link(href='/assets/stylesheets/style.css', rel='stylesheet', type='text/css')
+    script(src='https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.js')
+    script(src='/assets/javascripts/bootstrap.js')
   body
-    block content
+    nav.navbar.navbar-expand-sm.navbar-dark.bg-dark(role='navigation')
+      .container
+        .navbar-header
+          a.navbar-brand(href='#') NodeAuth
+          button.navbar-toggler(type='button', data-toggle='collapse', data-target='#navbar-collapse')
+            span.navbar-toggler-icon
+        .navbar-collapse.collapse#navbar-collapse
+          ul.navbar-nav.mr-auto
+            li.nav-item
+              a(href='/', class=`nav-link${title === 'Members' ? ' active' : ''}`) Members
+            li.nav-item
+              a(href='/users/register', class=`nav-link${title === 'Register' ? ' active' : ''}`) Register
+            li.nav-item
+              a(href='/users/login', class=`nav-link${title === 'Login' ? ' active' : ''}`) Login
+          ul.navbar-nav.navbar-right
+           li.nav-item
+              a.nav-link(href='/users/logout') Logout
+    .container
+     block content
