@@ -16,15 +16,16 @@ const createValidationChain = field => {
     }
 
     validationChain.isLength = function(options){
-        chain.push(chain => {
-            if (options.hasOwnProperty('min') && options.min > 0){
-                chain = chain.isLength({min: options.min}).withMessage(`${field} must be at least ${options.min} characters long`);
-            }
-            if (options.hasOwnProperty('max') && options.max < Infinity){
-                chain = chain.isLength({max: options.max}).withMessage(`${field} must be no more than ${options.max} characters long`);
-            }
-            return chain;
-        });
+        if (options.hasOwnProperty('min') && options.min > 0){
+            chain.push(chain => (
+                chain.isLength({min: options.min}).withMessage(`${field} must be at least ${options.min} characters long`)
+            ));
+        }
+        if (options.hasOwnProperty('max') && options.max < Infinity){
+            chain.push(chain => (
+                chain.isLength({max: options.max}).withMessage(`${field} must be no more than ${options.max} characters long`)
+            ));
+        }
         return this;
     };
 
