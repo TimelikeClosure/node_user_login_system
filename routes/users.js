@@ -40,9 +40,6 @@ router.post('/register', upload.single('profile_image'), [
     var profileImage = 'noimage.jpg';
   }
 
-  // Form Validation
-
-
   // Check Errors
   const errors = validationResult(req);
   if(errors.isEmpty()){

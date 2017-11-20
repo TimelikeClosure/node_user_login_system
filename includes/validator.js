@@ -6,16 +6,16 @@ const flow = require('lodash/fp/flow');
 const createValidationChain = field => {
     const chain = [];
 
-    validationChain.nonEmpty = () => {
+    validationChain.nonEmpty = function(){
         chain.push(chain => (
             chain
                 .exists().withMessage(`No ${field} provided`)
                 .not().isEmpty().withMessage(`No ${field} provided`)
         ));
-        return validationChain;
+        return this;
     }
 
-    validationChain.isLength = options => {
+    validationChain.isLength = function(options){
         chain.push(chain => {
             if (options.hasOwnProperty('min') && options.min > 0){
                 chain = chain.isLength({min: options.min}).withMessage(`${field} must be at least ${options.min} characters long`);
@@ -25,41 +25,41 @@ const createValidationChain = field => {
             }
             return chain;
         });
-        return validationChain;
+        return this;
     };
 
-    validationChain.isName = () => {
+    validationChain.isName = function(){
         chain.push(
             chain => chain.matches(/^[^\x00-\x1F\x7F\"\'\\]*$/).withMessage(`${field} can contain only printable characters other than ", ', \\`)
         );
-        validationChain.isLength({min: 2, max: 64});
-        return validationChain;
+        this.isLength({min: 2, max: 64});
+        return this;
     };
 
-    validationChain.isEmail = () => {
+    validationChain.isEmail = function(){
         chain.push(
             chain => chain.isEmail().withMessage(`${field} is not a valid email address`)
         );
-        return validationChain;
+        return this;
     };
 
-    validationChain.isUsername = () => {
+    validationChain.isUsername = function(){
         chain.push(
             chain => chain.isAlphanumeric().withMessage(`${field} can contain only alphanumeric characters`)
         );
-        validationChain.isLength({min: 8, max: 32});
-        return validationChain;
+        this.isLength({min: 8, max: 32});
+        return this;
     };
 
-    validationChain.isPassword = () => {
+    validationChain.isPassword = function(){
         chain.push(
             chain => chain.matches(/^[a-z0-9\-_\.]*$/i).withMessage(`${field} can only contain alphanumeric characters or -, _, .`)
         );
-        validationChain.isLength({min: 10, max: 64});
-        return validationChain;
+        this.isLength({min: 10, max: 64});
+        return this;
     };
 
-    validationChain.matchesField = (matchField, location) => {
+    validationChain.matchesField = function(matchField, location){
         chain.push(
             chain => (
                 chain
@@ -67,7 +67,7 @@ const createValidationChain = field => {
                     .withMessage(`${matchField} and ${field} must match`)
             )
         );
-        return validationChain;
+        return this;
     };
 
     return validationChain;
