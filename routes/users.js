@@ -1,9 +1,10 @@
 "use strict";
 const { requirePath, PATHS } = require('../paths');
+const _ = require('lodash/fp');
 const express = require('express');
 const router = express.Router();
 const upload = requirePath(PATHS.includes, 'upload');
-const { validationResult, bodyFieldsExist, bodyFieldsTrim, bodyFieldsNonEmpty } = requirePath(PATHS.includes, 'validator');
+const { body, sanitizeBody, validationResult, createValidationChain } = requirePath(PATHS.includes, 'validator');
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
@@ -14,15 +15,21 @@ router.get('/register', function(req, res, next) {
   res.render('register', { title: 'Register' });
 });
 
-router.post('/register', upload.single('profile_image'), bodyFieldsExist([
-  'name', 'email', 'username', 'password', 'password_confirm'
-]), bodyFieldsTrim([
-  'name', 'email', 'username'
-]), bodyFieldsNonEmpty([
-  'name', 'email', 'username', 'password'
-]), [
-  /* body('password_confirm', 'both passwords must match')
-    .equals(matchedData(req, {locations: ['body']}).password) */
+router.post('/register', upload.single('profile_image'), [
+  sanitizeBody('name').stripLow().trim(),
+  createValidationChain('name').nonEmpty().isName()(body)
+], [
+  sanitizeBody('email').stripLow().trim(),
+  createValidationChain('email').nonEmpty().isEmail()(body)
+], [
+  sanitizeBody('username').stripLow().trim(),
+  createValidationChain('username').nonEmpty().isUsername()(body)
+], [
+  sanitizeBody('password').stripLow(),
+  createValidationChain('password').nonEmpty().isPassword()(body)
+], [
+  sanitizeBody('password_confirm').stripLow(),
+  createValidationChain('password_confirm').nonEmpty().matchesField('password', 'body')(body)
 ], function(req, res, next) {
   const {name, email, username, password, password_confirm} = req.body;
   if (req.file){
@@ -42,7 +49,7 @@ router.post('/register', upload.single('profile_image'), bodyFieldsExist([
     console.log('there were no registration form errors');
   } else {
     console.log('the following registration form errors occured:');
-    console.log(JSON.stringify(errors.array()));
+    console.log(errors.array().map(value => JSON.stringify(value)).join('\n'));
   }
 });
 
