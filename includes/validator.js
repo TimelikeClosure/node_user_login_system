@@ -4,10 +4,10 @@ const { matchedData, sanitize, sanitizeBody } = require('express-validator/filte
 const flow = require('lodash/fp/flow');
 
 const createValidationChain = field => {
-    const chain = [];
+    const pipeline = [];
 
     validationChain.nonEmpty = function(){
-        chain.push(chain => (
+        pipeline.push(chain => (
             chain
                 .exists().withMessage(`No ${field} provided`)
                 .not().isEmpty().withMessage(`No ${field} provided`)
@@ -17,12 +17,12 @@ const createValidationChain = field => {
 
     validationChain.isLength = function(options){
         if (options.hasOwnProperty('min') && options.min > 0){
-            chain.push(chain => (
+            pipeline.push(chain => (
                 chain.isLength({min: options.min}).withMessage(`${field} must be at least ${options.min} characters long`)
             ));
         }
         if (options.hasOwnProperty('max') && options.max < Infinity){
-            chain.push(chain => (
+            pipeline.push(chain => (
                 chain.isLength({max: options.max}).withMessage(`${field} must be no more than ${options.max} characters long`)
             ));
         }
@@ -30,7 +30,7 @@ const createValidationChain = field => {
     };
 
     validationChain.isName = function(){
-        chain.push(
+        pipeline.push(
             chain => chain.matches(/^[^\x00-\x1F\x7F\"\'\\]*$/).withMessage(`${field} can contain only printable characters other than ", ', \\`)
         );
         this.isLength({min: 2, max: 64});
@@ -38,14 +38,14 @@ const createValidationChain = field => {
     };
 
     validationChain.isEmail = function(){
-        chain.push(
+        pipeline.push(
             chain => chain.isEmail().withMessage(`${field} is not a valid email address`)
         );
         return this;
     };
 
     validationChain.isUsername = function(){
-        chain.push(
+        pipeline.push(
             chain => chain.isAlphanumeric().withMessage(`${field} can contain only alphanumeric characters`)
         );
         this.isLength({min: 8, max: 32});
@@ -53,7 +53,7 @@ const createValidationChain = field => {
     };
 
     validationChain.isPassword = function(){
-        chain.push(
+        pipeline.push(
             chain => chain.matches(/^[a-z0-9\-_\.]*$/i).withMessage(`${field} can only contain alphanumeric characters or -, _, .`)
         );
         this.isLength({min: 10, max: 64});
@@ -61,7 +61,7 @@ const createValidationChain = field => {
     };
 
     validationChain.matchesField = function(matchField, location){
-        chain.push(
+        pipeline.push(
             chain => (
                 chain
                     .custom((value, {req}) => value === req[location][matchField])
@@ -74,7 +74,8 @@ const createValidationChain = field => {
     return validationChain;
 
     function validationChain(chainBase){
-        return flow(chain)(chainBase(field));
+        pipeline.unshift(chainBase);
+        return flow(pipeline)(field);
     }
 };
 

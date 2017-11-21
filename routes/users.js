@@ -1,6 +1,5 @@
 "use strict";
 const { requirePath, PATHS } = require('../paths');
-const _ = require('lodash/fp');
 const express = require('express');
 const router = express.Router();
 const upload = requirePath(PATHS.includes, 'upload');
