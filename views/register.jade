@@ -1,25 +1,27 @@
 extends layout
 
 block content
+  - fieldNames = ['name', 'email', 'username', 'password', 'password_confirm']
+  - fields = Object.assign(fieldNames.reduce((acc, name) => {acc[name] = {}; return acc}, {}), fields);
+  - Object.assign(fields.name, {label: "Name", type: "text", placeholder: "Enter Name"});
+  - Object.assign(fields.email, {label: "Email", type: "email", placeholder: "Enter Email"});
+  - Object.assign(fields.username, {label: "Username", type: "text", placeholder: "Enter Username"});
+  - Object.assign(fields.password, {label: "Password", type: "password", placeholder: "Enter Password"});
+  - Object.assign(fields.password_confirm, {label: "Confirm Password", type: "password", placeholder: "Re-Enter Password"});
+
   h2.page-header.border-bottom.border-dark(style="padding-bottom:9px;margin:40px 0 20px;border-bottom:solid 1px") Register
   p Please register using the form below
   form(method="post", action="/users/register", enctype="multipart/form-data")
-    .form-group
-      label Name
-      input.form-control(name="name", type="text", placeholder="Enter Name")
-    .form-group
-      label Email
-      input.form-control(name="email", type="email", placeholder="Enter Email")
-    .form-group
-      label Username
-      input.form-control(name="username", type="text", placeholder="Enter Username")
-    .form-group
-      label Password
-      input.form-control(name="password", type="password", placeholder="Enter Password")
-    .form-group
-      label Confirm Password
-      input.form-control(name="password_confirm", type="password", placeholder="Re-Enter Password")
-    .form-group
-      label Profile Image
-      input.form-control(name="profile_image", type="file")
+    - each name in fieldNames
+      - field = fields[name];
+      .form-group
+        label #{field.label}
+        if field.hasOwnProperty('value')
+          if field.hasOwnProperty('msg')
+            input.form-control.is-invalid(name=name, type=field.type, placeholder=field.placeholder, value=field.value)
+            .invalid-feedback #{field.msg}
+          else
+            input.form-control.is-valid(name=name, type=field.type, placeholder=field.placeholder value=field.value)
+        else
+          input.form-control(name=name, type=field.type, placeholder=field.placeholder)
     input.btn.btn-primary(name="submit", type="submit", value="Register")

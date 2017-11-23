@@ -41,6 +41,16 @@ router.post('/register', upload.single('profile_image'),
     } else {
       console.log('the following registration form errors occured:');
       console.log(errors.array().map(value => JSON.stringify(value)).join('\n'));
+      const fields = ['name', 'email', 'username', 'password', 'password_confirm']
+        .reduce((fields, field) => {
+          if (!fields.hasOwnProperty(field)){
+            fields[field] = {value: req.body[field]};
+          }
+          return fields;
+        }, errors.mapped());
+      res.render('register', {
+        fields: fields
+      });
     }
   }
 );
