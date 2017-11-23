@@ -9,8 +9,8 @@ const createValidationChain = field => {
     validationChain.nonEmpty = function(){
         pipeline.push(chain => (
             chain
-                .exists().withMessage(`No ${field} provided`)
-                .not().isEmpty().withMessage(`No ${field} provided`)
+                .exists().withMessage(`${field} is required`)
+                .not().isEmpty().withMessage(`${field} is required`)
         ));
         return this;
     }
