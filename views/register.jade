@@ -1,13 +1,14 @@
 extends layout
 
 block content
-  - fieldNames = ['name', 'email', 'username', 'password', 'password_confirm']
+  - fieldNames = ['name', 'email', 'username', 'password', 'password_confirm', 'profile_image']
   - fields = Object.assign(fieldNames.reduce((acc, name) => {acc[name] = {}; return acc}, {}), fields);
   - Object.assign(fields.name, {label: "Name", type: "text", placeholder: "Enter Name"});
   - Object.assign(fields.email, {label: "Email", type: "email", placeholder: "Enter Email"});
   - Object.assign(fields.username, {label: "Username", type: "text", placeholder: "Enter Username"});
   - Object.assign(fields.password, {label: "Password", type: "password", placeholder: "Enter Password"});
   - Object.assign(fields.password_confirm, {label: "Confirm Password", type: "password", placeholder: "Re-Enter Password"});
+  - Object.assign(fields.profile_image, {label: "Profile Image", type: "file", placeholder: false});
 
   h2.page-header.border-bottom.border-dark(style="padding-bottom:9px;margin:40px 0 20px;border-bottom:solid 1px") Register
   p Please register using the form below

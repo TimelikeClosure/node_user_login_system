@@ -13,9 +13,7 @@ const { check, validationResult, matchedData, sanitize } = requirePath(PATHS.inc
 const upload = requirePath(PATHS.includes, 'upload');
 const flash = require('connect-flash');
 const messages = require('express-messages');
-const mongo = require('mongodb');
 const mongoose = require('mongoose');
-const db = mongoose.connection;
 
 const index = requirePath(PATHS.routes, 'index');
 const users = requirePath(PATHS.routes, 'users');
@@ -44,20 +42,6 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // validator setup
-// errorFormatter: function(param, msg, value){
-//   var namespace = param.split('.'),
-//     root = namespace.shift(),
-//     formParam = root;
-
-//   while(namespace.length){
-//     formParam += '[' + namespace.shift() + ']';
-//   }
-//   return {
-//     param: formParam,
-//     msg: msg,
-//     value: value
-//   }
-// }
 app.use([
   // validation checks
 ], function(req, res, next){
@@ -66,10 +50,6 @@ app.use([
   if (!errors.isEmpty()) {
     return res.status(422).json({ errors: errors.array() });
   }
-
-  // matchedData returns only the subset of data validated by the middleware
-  // const user = matchedData(req);
-  // createUser(user).then(user => res.json(user));
   next();
 });
 
