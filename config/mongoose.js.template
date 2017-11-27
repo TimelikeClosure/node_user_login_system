@@ -1,0 +1,19 @@
+"use strict";
+
+const config = {
+    "scheme": "<scheme>",
+    "host": "<host>",
+    "port": "<port>",
+    "database": "<database>",
+    "user": "<username>",
+    "pass": "<password>"
+};
+
+module.exports = {
+    uri: `${config.scheme}://${config.hostname}:${config.port}/${config.database}`,
+    options: {
+        useMongoClient: true,
+        user: config.user,
+        pass: config.pass
+    }
+};

@@ -13,7 +13,7 @@ const { check, validationResult, matchedData, sanitize } = requirePath(PATHS.inc
 const upload = requirePath(PATHS.includes, 'upload');
 const flash = require('connect-flash');
 const messages = require('express-messages');
-const mongoose = require('mongoose');
+const mongoose = requirePath(PATHS.includes, 'mongoose');
 
 const index = requirePath(PATHS.routes, 'index');
 const users = requirePath(PATHS.routes, 'users');

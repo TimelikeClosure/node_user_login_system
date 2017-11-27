@@ -5,6 +5,7 @@ const PATHS = Object.freeze({
     config: path.join(__dirname, 'config'),
     client: path.join(__dirname, 'public'),
     includes: path.join(__dirname, 'includes'),
+    models: path.join(__dirname, 'models'),
     routes: path.join(__dirname, 'routes'),
     views: path.join(__dirname, 'views')
 });

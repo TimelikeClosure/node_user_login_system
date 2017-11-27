@@ -4,6 +4,7 @@ const express = require('express');
 const router = express.Router();
 const upload = requirePath(PATHS.includes, 'upload');
 const { body, sanitizeBody, validationResult, createValidationChain } = requirePath(PATHS.includes, 'validator');
+const User = requirePath(PATHS.models, 'user');
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
@@ -38,7 +39,24 @@ router.post('/register', upload.single('profile_image'),
     // Check Errors
     const errors = validationResult(req);
     if(errors.isEmpty()){
-      console.log('there were no registration form errors');
+      const newUser = new User({
+        name,
+        email,
+        username,
+        password,
+        profileImage
+      });
+      newUser.save().then(user => {
+        console.log('new user added:\n', user);
+        res.redirect('/');
+      }).catch(err => {
+        console.error('error adding new user:\n', err);
+        const fields = fieldNames.reduce((fields, field) => {
+          fields[field] = {value: req.body[field]};
+          return fields;
+        }, {});
+        res.render('register', {fields: fields});
+      });
     } else {
       console.log('the following registration form errors occured:');
       console.log(errors.array().map(value => JSON.stringify(value)).join('\n'));
