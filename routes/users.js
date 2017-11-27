@@ -55,7 +55,7 @@ router.post('/register', upload.single('profile_image'),
           fields[field] = {value: req.body[field]};
           return fields;
         }, {});
-        res.render('register', {fields: fields});
+        res.render('register', { fields });
       });
     } else {
       console.log('the following registration form errors occured:');
@@ -66,9 +66,7 @@ router.post('/register', upload.single('profile_image'),
         }
         return fields;
       }, errors.mapped());
-      res.render('register', {
-        fields: fields
-      });
+      res.render('register', { fields });
     }
   }
 );
