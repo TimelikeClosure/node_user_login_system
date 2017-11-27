@@ -48,6 +48,7 @@ router.post('/register', upload.single('profile_image'),
       });
       newUser.save().then(user => {
         console.log('new user added:\n', user);
+        req.flash('success', 'User successfully created. Please login to begin.')
         res.redirect('/');
       }).catch(err => {
         console.error('error adding new user:\n', err);
@@ -66,6 +67,7 @@ router.post('/register', upload.single('profile_image'),
         }
         return fields;
       }, errors.mapped());
+      req.flash('danger', 'There were errors with some registration fields. See below for details.');
       res.render('register', { fields });
     }
   }

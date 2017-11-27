@@ -5,7 +5,9 @@ html(lang='en')
     link(href='/assets/stylesheets/bootstrap.css', rel='stylesheet', type='text/css')
     link(href='/assets/stylesheets/style.css', rel='stylesheet', type='text/css')
     script(src='https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.js')
+    script(src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.js")
     script(src='/assets/javascripts/bootstrap.js')
+    script(src='/assets/javascripts/main.js')
   body
     nav.navbar.navbar-expand-sm.navbar-dark.bg-dark(role='navigation')
       .container
@@ -25,4 +27,5 @@ html(lang='en')
            li.nav-item
               a.nav-link(href='/users/logout') Logout
     .container
-     block content
+      != messages('messages', locals)
+      block content
