@@ -5,16 +5,21 @@ const mongoose = requirePath(PATHS.includes, 'mongoose');
 const userSchema = mongoose.Schema({
     username: {
         type: String,
+        lowercase: true,
+        required: true,
         index: true
     },
     password: {
-        type: String
+        type: String,
+        required: true
     },
     email: {
-        type: String
+        type: String,
+        required: true
     },
     name: {
-        type: String
+        type: String,
+        required: true
     },
     profileImage: {
         type: String,
