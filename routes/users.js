@@ -38,27 +38,7 @@ router.post('/register', upload.single('profile_image'),
 
     // Check Errors
     const errors = validationResult(req);
-    if(errors.isEmpty()){
-      const newUser = new User({
-        name,
-        email,
-        username,
-        password,
-        profileImage
-      });
-      newUser.save().then(user => {
-        console.log('new user added:\n', user);
-        req.flash('success', 'User successfully created. Please login to begin.')
-        res.redirect('/');
-      }).catch(err => {
-        console.error('error adding new user:\n', err);
-        const fields = fieldNames.reduce((fields, field) => {
-          fields[field] = {value: req.body[field]};
-          return fields;
-        }, {});
-        res.render('register', { fields });
-      });
-    } else {
+    if(!errors.isEmpty()) {
       console.log('the following registration form errors occured:');
       console.log(errors.array().map(value => JSON.stringify(value)).join('\n'));
       const fields = fieldNames.reduce((fields, field) => {
@@ -67,8 +47,27 @@ router.post('/register', upload.single('profile_image'),
         }
         return fields;
       }, errors.mapped());
-      req.flash('danger', 'There were errors with some registration fields. See below for details.');
+      req.flash('danger', 'There were some errors with your registration. See below for details.');
       res.render('register', { fields });
+    } else {
+      User.createUser({
+        name,
+        email,
+        username,
+        password,
+        profileImage
+      }).catch(err => {
+        console.error('error adding new user:\n', err);
+        const fields = fieldNames.reduce((fields, field) => {
+          fields[field] = {value: req.body[field]};
+          return fields;
+        }, {});
+        res.render('register', { fields });
+      }).then(user => {
+        console.log('new user added:\n', user);
+        req.flash('success', 'User successfully created. Please login to begin.')
+        res.redirect('/');
+      });
     }
   }
 );
