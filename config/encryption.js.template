@@ -1,0 +1,14 @@
+"use strict";
+
+const hooks = {
+    validate: (password, hash) => {
+        // compare password against hash
+        // returns a promise which resolves to a boolean
+    },
+    encrypt: password => {
+        // encrypt a new password
+        // returns a promise which resolves to a hash
+    }
+};
+
+module.exports = exports = hooks;
