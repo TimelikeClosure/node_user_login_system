@@ -56,17 +56,18 @@ router.post('/register', upload.single('profile_image'),
         username,
         password,
         profileImage
+      }).then(user => {
+        console.log('new user added:\n', user);
+        req.flash('success', 'User successfully created. Please login to begin.')
+        res.redirect('/');
       }).catch(err => {
         console.error('error adding new user:\n', err);
         const fields = fieldNames.reduce((fields, field) => {
           fields[field] = {value: req.body[field]};
           return fields;
         }, {});
+        req.flash('danger', 'There was an issue contacting the server. Please try again later.');
         res.render('register', { fields });
-      }).then(user => {
-        console.log('new user added:\n', user);
-        req.flash('success', 'User successfully created. Please login to begin.')
-        res.redirect('/');
       });
     }
   }

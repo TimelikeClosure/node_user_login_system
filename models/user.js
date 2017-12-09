@@ -2,6 +2,7 @@
 const { requirePath, PATHS } = require('../paths');
 const mongoose = requirePath(PATHS.includes, 'mongoose');
 const { encrypt } = requirePath(PATHS.includes, 'encryption');
+const Timeout = requirePath(PATHS.includes, 'timeout');
 
 const userSchema = mongoose.Schema({
     username: {
@@ -32,24 +33,21 @@ const User = mongoose.model('User', userSchema);
 
 User.createUser = function(newUser){
     return new Promise((resolve, reject) => {
-        const timeout = setTimeout(() => {
-            reject(new Error(`User creation timeout`));
-        }, 10000);
-        encrypt(newUser.password).catch(err => {
-            clearTimeout(timeout);
-            reject(new Error(`Password encryption error: ${err}`));
-        }).then(hash => {
-            newUser = Object.assign({}, newUser);
-            newUser.password = hash;
-            (new User(newUser)).save().catch(err => {
-                clearTimeout(timeout);
-                reject(new Error(`User creation error: ${err}`));
-            }).then(user => {
-                clearTimeout(timeout);
-                resolve(user);
-            });
-        });
-    });
-}
+        const timeout = new Timeout(() => reject(new Error(`User creation timeout`)), 10000);
+        const rejectHandler = timeout.ifActive(err => (
+            reject(new Error(`User creation error: ${err}`))
+        ), true);
 
-module.exports = User;
+        encrypt(newUser.password).then(
+            timeout.ifActive(hash => {
+                newUser = Object.assign({}, newUser);
+                newUser.password = hash;
+                (new User(newUser)).save().then(
+                    timeout.ifActive(user => resolve(user))
+                ).catch(rejectHandler);
+            })
+        ).catch(rejectHandler);
+    });
+};
+
+module.exports = exports = User;
