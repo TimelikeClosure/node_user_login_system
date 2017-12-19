@@ -7,12 +7,11 @@ const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const session = require('express-session');
-const passport = require('passport');
-const LocalStrategy = require('passport-local').Strategy;
 const { check, validationResult, matchedData, sanitize } = requirePath(PATHS.includes, 'validator');
 const upload = requirePath(PATHS.includes, 'upload');
 const flash = require('connect-flash');
 const messages = require('express-messages');
+const passport = requirePath(PATHS.includes, 'passport');
 const mongoose = requirePath(PATHS.includes, 'mongoose');
 
 const index = requirePath(PATHS.routes, 'index');

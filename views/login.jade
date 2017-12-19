@@ -1,13 +1,24 @@
 extends layout
 
 block content
+  - fieldNames = ['username', 'password']
+  - fields = Object.assign(fieldNames.reduce((acc, name) => {acc[name] = {}; return acc}, {}), fields);
+  - Object.assign(fields.username, {label: "Username:", type: "text", placeholder: "Enter Username"});
+  - Object.assign(fields.password, {label: "Password:", type: "password", placeholder: "Enter Password"});
+
   h2.page-header.border-bottom.border-dark(style="padding-bottom:9px;margin:40px 0 20px;border-bottom:solid 1px") Login
   p Please login using the form below
-  form(method="post", action="/users/register")
-    .form-group
-      label Username
-      input.form-control(name="username", type="text", placeholder="Enter Username")
-    .form-group
-      label Password
-      input.form-control(name="password", type="password", placeholder="Enter Password")
+  form(method="post", action="/users/login")
+    - each name in fieldNames
+      - field = fields[name];
+      .form-group
+        label #{field.label}
+        if field.hasOwnProperty('value')
+          if field.hasOwnProperty('msg')
+            input.form-control.is-invalid(name=name, type=field.type, placeholder=field.placeholder, value=field.value)
+            .invalid-feedback #{field.msg}
+          else
+            input.form-control.is-valid(name=name, type=field.type, placeholder=field.placeholder value=field.value)
+        else
+          input.form-control(name=name, type=field.type, placeholder=field.placeholder)
     input.btn.btn-primary(name="submit", type="submit", value="Login")

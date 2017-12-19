@@ -71,4 +71,8 @@ User.validateUser = function(username, password){
     });
 };
 
+User.getUserById = function(username, done){
+    done(null, false);
+};
+
 module.exports = exports = User;
