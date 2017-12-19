@@ -27,5 +27,8 @@ html(lang='en')
            li.nav-item
               a.nav-link(href='/users/logout') Logout
     .container
-      != messages('messages', locals)
+      if typeof messages === "function"
+        != messages('messages', locals)
+      else
+        != messages
       block content
