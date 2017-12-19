@@ -1,7 +1,7 @@
 .messages(style='padding-bottom:9px;margin:40px 0 20px')
     each type in Object.keys(messages)
         each message in messages[type]
-            div(class=`alert alert-${type} alert-dismissible fade show`, role="alert")
+            div(class=`alert alert-${type === "error" ? "danger" : type} alert-dismissible fade show`, role="alert")
                 | #{message}
                 button.close(type="button", data-dismiss="alert", aria-label="Close")
                     span(aria-hidden="true") &times;
