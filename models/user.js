@@ -1,7 +1,7 @@
 "use strict";
 const { requirePath, PATHS } = require('../paths');
 const mongoose = requirePath(PATHS.includes, 'mongoose');
-const { encrypt } = requirePath(PATHS.includes, 'encryption');
+const { encrypt, validate } = requirePath(PATHS.includes, 'encryption');
 const Timeout = requirePath(PATHS.includes, 'timeout');
 
 const userSchema = mongoose.Schema({
@@ -44,6 +44,27 @@ User.createUser = function(newUser){
                 newUser.password = hash;
                 (new User(newUser)).save().then(
                     timeout.ifActive(user => resolve(user))
+                ).catch(rejectHandler);
+            })
+        ).catch(rejectHandler);
+    });
+};
+
+User.validateUser = function(username, password){
+    return new Promise((resolve, reject) => {
+        const timeout = new Timeout(() => reject(new Error(`User validation timeout`)), 10000);
+        const rejectHandler = timeout.ifActive(err => (
+            reject(new Error(`User validation error: ${err}`))
+        ), true);
+
+        this.findOne({username: username}).exec().then(
+            timeout.ifActive(user => {
+                if (user === null){
+                    timeout.clear();
+                    return resolve(null);
+                }
+                validate(password, user.password).then(
+                    timeout.ifActive(isValid => isValid ? resolve(user) : resolve(null))
                 ).catch(rejectHandler);
             })
         ).catch(rejectHandler);
