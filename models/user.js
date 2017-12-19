@@ -38,12 +38,20 @@ User.createUser = function(newUser){
             reject(new Error(`User creation error: ${err}`))
         ), true);
 
-        encrypt(newUser.password).then(
-            timeout.ifActive(hash => {
-                newUser = Object.assign({}, newUser);
-                newUser.password = hash;
-                (new User(newUser)).save().then(
-                    timeout.ifActive(user => resolve(user))
+        User.count({$or: [{username: newUser.username}, {email: newUser.email}]}).exec().then(
+            timeout.ifActive(count => {
+                if (count > 0){
+                    timeout.clear();
+                    return resolve(false);
+                }
+                encrypt(newUser.password).then(
+                    timeout.ifActive(hash => {
+                        newUser = Object.assign({}, newUser);
+                        newUser.password = hash;
+                        (new User(newUser)).save().then(
+                            timeout.ifActive(user => resolve(user))
+                        ).catch(rejectHandler);
+                    })
                 ).catch(rejectHandler);
             })
         ).catch(rejectHandler);

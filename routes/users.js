@@ -97,6 +97,18 @@ router.post('/register', upload.single('profile_image'),
         password,
         profileImage
       }).then(user => {
+        if (!user){
+          console.log('duplicate user attempted: ', {name, email, username});
+          const fields = fieldNames.reduce((fields, field) => {
+            fields[field] = {value: req.body[field]};
+            if (['username', 'email'].includes(field)){
+              fields[field].msg = '';
+            }
+            return fields;
+          }, {});
+          req.flash('danger', 'A user with that username or email already exists.');
+          res.render('register', { fields });
+        }
         console.log('new user added:\n', user);
         req.flash('success', 'User successfully created. Please login to begin.')
         res.redirect('/');
