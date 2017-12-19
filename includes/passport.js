@@ -9,10 +9,14 @@ passport.serializeUser(function(user, done){
 });
 
 passport.deserializeUser(function(id, done){
-    User.getUserById(id, function(err, user){
+    User.getUserById(id).then(user => {
+        if (user === null){
+            console.log('User is anonymous');
+            done(null, false);
+        }
         console.log('User currently logged in: ', user);
-        done(err, user);
-    });
+        done(null, user);
+    }).catch(err => done(err, false));
 });
 
 passport.use(new LocalStrategy({
@@ -24,9 +28,7 @@ passport.use(new LocalStrategy({
             return done(null, false, {message: 'Invalid username or password.'})
         }
         return done(null, user, {message: 'Successfully logged in.'});
-    }).catch(err => (
-        done(err, false)
-    ));
+    }).catch(err => done(err, false));
 }));
 
 module.exports = exports = passport;
